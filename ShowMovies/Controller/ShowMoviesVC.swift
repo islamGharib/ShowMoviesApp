@@ -9,11 +9,18 @@
 import UIKit
 import Alamofire
 import AlamofireImage
-
+/*
+ this view controller responsible for get the data from the api of the server moviedb,
+ displaying all movies onto the movieTVC and handling the search operation to help user to find specif movie
+ */
 class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+    // searchbar outlet
     @IBOutlet private weak var searchBar: UISearchBar!
+    
     @IBOutlet private weak var moviesTableView: UITableView!
+    // array for storing all movies getting from the server
     private var movies:Array<[String:Any]> = []
+    // array contain only the searching result for user
     private var searchMovies:Array<[String:Any]> = []
     private var searching = false
     
@@ -22,6 +29,8 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         moviesTableView.delegate = self
         moviesTableView.dataSource = self
         searchBar.delegate = self
+        
+        // get all movies from the server
         fetchMovies()
         
     }
@@ -43,6 +52,7 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
                 moviesTableView.reloadData()
         }
     }
+    // handle the cancel button of the search bar
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searching = false
         searchBar.text = ""
@@ -62,6 +72,7 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:MovieTVC = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieTVC
         
+        // display the movies on the cell view
         if searching{
             cell.movieTitleLB.text = searchMovies[indexPath.row]["title"] as! String
             cell.movieOverviewTV.text = searchMovies[indexPath.row]["overview"] as! String
@@ -92,6 +103,7 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         }
     }
     
+    // get all movies from the server then store them to the movies array
     private func fetchMovies(){
         let apiKey = "c8e63d4a4435054c70c1955bf7693cb8"
         guard let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")else{return}
@@ -114,6 +126,7 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
             }.resume()
     }
     
+    // go to the favorite movies view
     @IBAction private func favoriteMoviesB(_ sender: UIBarButtonItem) {
         self.navigationController?.popViewController(animated: true)
     }

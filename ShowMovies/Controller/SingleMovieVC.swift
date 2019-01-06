@@ -9,7 +9,12 @@
 import UIKit
 import Alamofire
 import AlamofireImage
+/*
+  this view controller responsible for displaying the details of the selected movie
+  and add this movie to the core data of the favorite movies
+ */
 class SingleMovieVC: UIViewController {
+    // dic store the movie details
     var movie = [String:Any]()
     @IBOutlet private weak var movieTitle: UILabel!
     @IBOutlet private weak var moviePosterImage: UIImageView!
@@ -23,6 +28,7 @@ class SingleMovieVC: UIViewController {
 
     }
     
+    // display the movie details
     private func showMovieDetails(){
         movieTitle.text = (movie["title"] as! String)
         movieOverview.text = movie["overview"] as! String
@@ -37,6 +43,7 @@ class SingleMovieVC: UIViewController {
         moviePosterImage.af_setImage(withURL:imageUrl!)
     }
     
+    // add the movie to the favorite core data
     @IBAction private func addToFavoritesB(_ sender: UIButton) {
         let newMovie = Movies(context: context)
         

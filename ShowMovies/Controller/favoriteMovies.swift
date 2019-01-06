@@ -8,6 +8,9 @@
 
 import UIKit
 import CoreData
+/*
+ this view controller responsible for displaying all movies onto the favoriteMovieTVC and deleting it from the favorite core data
+ */
 class favoriteMovies: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private var favoriteMovie = [Movies]()
     @IBOutlet private weak var favoriteTableView: UITableView!
@@ -43,6 +46,7 @@ class favoriteMovies: UIViewController, UITableViewDataSource, UITableViewDelega
         return cell
     }
     
+    // get the favorite movies from the core data model
     private func loadItems(){
         let fetchRequest:NSFetchRequest<Movies> = Movies.fetchRequest()
         
@@ -54,6 +58,7 @@ class favoriteMovies: UIViewController, UITableViewDataSource, UITableViewDelega
             print("Can't load Items")
         }
     }
+    // delete the movie from the favorites
     @objc func deleteMovie(_ sender: UIButton) {
         context.delete(favoriteMovie[sender.tag])
         loadItems()

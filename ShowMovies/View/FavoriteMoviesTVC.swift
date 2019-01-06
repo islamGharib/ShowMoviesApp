@@ -7,7 +7,11 @@
 //
 
 import UIKit
-
+/*
+ this view cell displays only the favorite movies for the user
+ it contains lable for displaying movie title , lable for displaying the description and
+ image view for displaying the movie poster
+ */
 class FavoriteMoviesTVC: UITableViewCell {
     @IBOutlet weak var movieTitleLB: UILabel!
     @IBOutlet weak var moviePosterImage: UIImageView!
