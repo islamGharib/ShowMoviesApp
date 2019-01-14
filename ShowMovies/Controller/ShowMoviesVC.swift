@@ -72,24 +72,21 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:MovieTVC = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieTVC
         
+        var results:Array<[String:Any]> = []
         // display the movies on the cell view
         if searching{
-            cell.movieTitleLB.text = searchMovies[indexPath.row]["title"] as! String
-            cell.movieOverviewTV.text = searchMovies[indexPath.row]["overview"] as! String
-            
-            let posterPath = searchMovies[indexPath.row]["poster_path"] as! String
-            let baseUrl = "https://image.tmdb.org/t/p/w500"
-            let imageUrl = URL(string: baseUrl + posterPath)
-            cell.moviePosterImage.af_setImage(withURL:imageUrl!)
+            results = searchMovies
         }else{
-            cell.movieTitleLB.text = movies[indexPath.row]["title"] as! String
-            cell.movieOverviewTV.text = movies[indexPath.row]["overview"] as! String
+            results = movies
+        }
+            cell.movieTitleLB.text = results[indexPath.row]["title"] as! String
+            cell.movieOverviewTV.text = results[indexPath.row]["overview"] as! String
             
-            let posterPath = movies[indexPath.row]["poster_path"] as! String
+            let posterPath = results[indexPath.row]["poster_path"] as! String
             let baseUrl = "https://image.tmdb.org/t/p/w500"
             let imageUrl = URL(string: baseUrl + posterPath)
             cell.moviePosterImage.af_setImage(withURL:imageUrl!)
-        }
+        
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
