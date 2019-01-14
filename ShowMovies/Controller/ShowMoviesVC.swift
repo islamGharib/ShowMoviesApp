@@ -105,6 +105,22 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
         let apiKey = "c8e63d4a4435054c70c1955bf7693cb8"
         guard let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")else{return}
         
+        // using Alamofire to request api
+        Alamofire.request(url).responseJSON(completionHandler: {
+            response in
+            switch response.result{
+            case .success:
+                let dataResponse = response.result.value as! [String:Any]
+                DispatchQueue.main.async {
+                    self.movies = dataResponse["results"] as! Array<[String : Any]>
+                    self.moviesTableView.reloadData()
+                }
+            case .failure(let error):
+                print(error)
+            }
+        })
+        
+        /*      make a request using dataTask
         URLSession.shared.dataTask(with: url){(data, success, error) in
             if error == nil {
                 do{
@@ -120,7 +136,7 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
                     
                 }
             }
-            }.resume()
+            }.resume()  */
     }
     
     // go to the favorite movies view
