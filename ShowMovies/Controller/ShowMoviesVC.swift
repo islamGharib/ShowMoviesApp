@@ -18,10 +18,10 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     @IBOutlet private weak var searchBar: UISearchBar!
     
     @IBOutlet private weak var moviesTableView: UITableView!
-    // array for storing all movies getting from the server
-    private var movies:Array<[String:Any]> = []
+    // array for storing all movies getting from AllMoviesGet object model
+    private var movies = [AllMoviesGet]()
     // array contain only the searching result for user
-    private var searchMovies:Array<[String:Any]> = []
+    private var searchMovies = [AllMoviesGet]()
     private var searching = false
     
     override func viewDidLoad() {
@@ -43,7 +43,7 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
             fetchMovies()
         }else{
                 for movie in movies{
-                    let title = movie["title"] as! String
+                    let title = movie.title
                     if title.lowercased().prefix(searchText.count) == searchText.lowercased(){
                         searchMovies.append(movie)
                     }
@@ -72,17 +72,17 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:MovieTVC = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieTVC
         
-        var results:Array<[String:Any]> = []
+        var results = [AllMoviesGet]()
         // display the movies on the cell view
         if searching{
             results = searchMovies
         }else{
             results = movies
         }
-            cell.movieTitleLB.text = results[indexPath.row]["title"] as! String
-            cell.movieOverviewTV.text = results[indexPath.row]["overview"] as! String
+            cell.movieTitleLB.text = results[indexPath.row].title
+            cell.movieOverviewTV.text = results[indexPath.row].overview
             
-            let posterPath = results[indexPath.row]["poster_path"] as! String
+            let posterPath = results[indexPath.row].poster_path
             let baseUrl = "https://image.tmdb.org/t/p/w500"
             let imageUrl = URL(string: baseUrl + posterPath)
             cell.moviePosterImage.af_setImage(withURL:imageUrl!)
@@ -95,7 +95,7 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "oneMovieSeg"{
             if let dist = segue.destination as? SingleMovieVC{
-                dist.movie = sender as! [String : Any]
+                dist.movie = (sender as! AllMoviesGet)
             }
         }
     }
@@ -112,7 +112,18 @@ class ShowMoviesVC: UIViewController, UITableViewDataSource, UITableViewDelegate
             case .success:
                 let dataResponse = response.result.value as! [String:Any]
                 DispatchQueue.main.async {
-                    self.movies = dataResponse["results"] as! Array<[String : Any]>
+                    let results:Array<[String:Any]> = dataResponse["results"] as! Array<[String:Any]>
+                    // store the result of the api into the data model
+                    for movie in results{
+                        let movieTitle = movie["title"] as! String
+                        let movieOverview = movie["overview"] as! String
+                        let moviePosterImage = movie["poster_path"] as! String
+                        let movieVoteAverage = movie["vote_average"] as! Double
+                        let movieReleaseDate = movie["release_date"] as! String
+                        
+                        self.movies.append(AllMoviesGet(vote_count: 0, id: 0, video: false, vote_average: movieVoteAverage, title: movieTitle, popularity: 1.0, poster_path: moviePosterImage, original_language: "en", original_title: "", genre_ids: [], backdrop_path: "", adult: false, overview: movieOverview, release_date: movieReleaseDate))
+                    }
+                    
                     self.moviesTableView.reloadData()
                 }
             case .failure(let error):
